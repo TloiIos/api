@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Key Management System</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Key Manager</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="packages-tab"><i class="fa-solid fa-box"></i> Quản lý Packages</li>
+                <li class="nav-item" data-tab="keys-tab"><i class="fa-solid fa-key"></i> Quản lý Keys</li>
+                <li class="nav-item" data-tab="bypass-tab"><i class="fa-solid fa-user-slash"></i> Bypass Menu UIDs</li>
+                <li class="nav-item" data-tab="devices-tab"><i class="fa-solid fa-mobile-screen"></i> Device Info</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2>Hệ Thống Quản Trị Server Key</h2>
+                <div class="user-badge"><i class="fa-solid fa-circle-user"></i> Admin</div>
+            </header>
+
+            <div class="content-body">
+
+                <!-- TAB 1: PACKAGES -->
+                <div class="tab-pane active" id="packages-tab">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-box-open"></i> Danh Sách Packages (Tạo trước)</h3>
+                        <button class="btn btn-primary" onclick="openModal('packageModal')"><i class="fa-solid fa-plus"></i> Tạo Package Mới</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên Gói</th>
+                                    <th>Thời hạn (Ngày)</th>
+                                    <th>Max Devices</th>
+                                    <th>Giá</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="packageTableBody">
+                                <!-- Data rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: KEYS -->
+                <div class="tab-pane" id="keys-tab">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-key"></i> Danh Sách Keys Hoạt Động</h3>
+                        <button class="btn btn-primary" onclick="openKeyModal()"><i class="fa-solid fa-plus"></i> Tạo Key Mới</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Key String</th>
+                                    <th>Package ID</th>
+                                    <th>Thiết bị (UIDs / Max)</th>
+                                    <th>Ngày tạo / Hết hạn</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keyTableBody">
+                                <!-- Data rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: BYPASS MENU UIDS -->
+                <div class="tab-pane" id="bypass-tab">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-user-slash"></i> Quản Lý Bypass Anticheat Menu (Crackers)</h3>
+                        <button class="btn btn-primary" onclick="openModal('bypassModal')"><i class="fa-solid fa-plus"></i> Thêm UID Bypass</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>UID Người Dùng</th>
+                                    <th>Bật / Tắt Bypass</th>
+                                    <th>Cập nhật lần cuối</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bypassTableBody">
+                                <!-- Data rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 4: DEVICE INFO -->
+                <div class="tab-pane" id="devices-tab">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-mobile-screen-button"></i> Trạng Thái Thiết Bị Đăng Nhập (Device Info)</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>UID Thiết Bị</th>
+                                    <th>Tên Thiết Bị / Model</th>
+                                    <th>App Name / Bundle ID</th>
+                                    <th>Key đang dùng</th>
+                                    <th>Hệ điều hành</th>
+                                    <th>Thời gian Log</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deviceTableBody">
+                                <!-- Data rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: CREATE PACKAGE -->
+    <div class="modal" id="packageModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('packageModal')">&times;</span>
+            <h3>Tạo Package Mới</h3>
+            <form id="packageForm" onsubmit="createPackage(event)">
+                <div class="form-group">
+                    <label>Tên Gói</label>
+                    <input type="text" id="pkgName" required placeholder="VD: VIP 30 Ngày">
+                </div>
+                <div class="form-group">
+                    <label>Thời hạn (Số ngày, 0 = Vĩnh viễn)</label>
+                    <input type="number" id="pkgDuration" required value="30">
+                </div>
+                <div class="form-group">
+                    <label>Số thiết bị tối đa (Max Devices)</label>
+                    <input type="number" id="pkgMaxDevices" required value="1">
+                </div>
+                <div class="form-group">
+                    <label>Giá tiền</label>
+                    <input type="number" id="pkgPrice" required value="0">
+                </div>
+                <button type="submit" class="btn btn-success w-100">Lưu Package</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE KEY -->
+    <div class="modal" id="keyModal">
+        <div class="modal-content vip">
+            <span class="close" onclick="closeModal('keyModal')">&times;</span>
+            <h3><i class="fa-solid fa-crown"></i> Tạo Key Mới Theo Package</h3>
+            <form id="keyForm" onsubmit="createKey(event)">
+                <div class="form-group">
+                    <label>Chọn Package</label>
+                    <select id="keyPackageSelect" required onchange="syncKeyDefaults()">
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thời hạn (Ngày, 0 = Vĩnh viễn)</label>
+                        <input type="number" id="keyDurationInput" min="0" value="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Devices</label>
+                        <input type="number" id="keyMaxDevicesInput" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tùy chỉnh Key (Để trống để tự động sinh)</label>
+                    <input type="text" id="customKeyInput" placeholder="VD: KEY-xxxx-xxxx">
+                </div>
+                <button type="submit" class="btn btn-success w-100">Khởi Tạo Key</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD BYPASS UID -->
+    <div class="modal" id="bypassModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('bypassModal')">&times;</span>
+            <h3>Thêm UID Vào Danh Sách Bypass</h3>
+            <form id="bypassForm" onsubmit="createBypass(event)">
+                <div class="form-group">
+                    <label>Nhập UID Thiết Bị / Người Dùng (Crack)</label>
+                    <input type="text" id="bypassUidInput" required placeholder="VD: D8A2CC1E-B9C8-4853-AEBC-9AB7C5BA1ADE">
+                </div>
+                <div class="form-group">
+                    <label>Trạng thái Bypass Anticheat</label>
+                    <select id="bypassStatusSelect">
+                        <option value="true">True (Bật/Chặn Menu)</option>
+                        <option value="false">False (Tắt)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Xác Nhận</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
